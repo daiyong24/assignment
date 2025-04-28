@@ -1,118 +1,115 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { View, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import HomeScreen from './screens/HomeScreen';
+import OrderScreen from './screens/OrderScreen';
+import RewardScreen from './screens/RewardScreen';
+import SettingScreen from './screens/SettingScreen';
+import DrawerNavigator from './screens/Drawer'; // <--- Rename the import (DrawerNavigator)
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const Tab = createBottomTabNavigator();
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+// Custom Button for TabBar
+const CustomButton = ({ children, onPress, accessibilityState }) => {
+  const focused = accessibilityState?.selected;
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={{ overflow: 'hidden' }}>
+      <TouchableNativeFeedback onPress={onPress}>
+        <View style={{
+          width: 100,
+          alignItems: 'center',
+          backgroundColor: focused ? 'yellow' : 'transparent',
+          padding: 10,
+          marginBottom: 10
+        }}>
+          {children}
+        </View>
+      </TouchableNativeFeedback>
     </View>
   );
-}
+};
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+// Tab Navigator (Bottom Tabs)
+export const TabNavigator = () => { // <--- export it so Drawer can use
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <Tab.Navigator
+      screenOptions={({ navigation }) => ({
+        headerRight: () => (
+          <TouchableOpacity onPress={() => navigation.openDrawer()}>
+            <MaterialCommunityIcons name="menu" size={30} color="black" style={{ marginLeft: 15 }}  drawerPosition = 'right'/>
+          </TouchableOpacity>
+        ),
+      })}
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons
+              name="home"
+              size={focused ? 30 : 20}
+              color={focused ? 'red' : 'gray'}
+            />
+          ),
+          tabBarButton: (props) => <CustomButton {...props} />,
+        }}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <Tab.Screen
+        name="Order"
+        component={OrderScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons
+              name="clipboard-text"
+              size={focused ? 30 : 20}
+              color={focused ? 'red' : 'gray'}
+            />
+          ),
+          tabBarButton: (props) => <CustomButton {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="Reward"
+        component={RewardScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons
+              name="gift"
+              size={focused ? 30 : 20}
+              color={focused ? 'red' : 'gray'}
+            />
+          ),
+          tabBarButton: (props) => <CustomButton {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="Setting"
+        component={SettingScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons
+              name="cog"
+              size={focused ? 30 : 20}
+              color={focused ? 'red' : 'gray'}
+            />
+          ),
+          tabBarButton: (props) => <CustomButton {...props} />,
+        }}
+      />
+    </Tab.Navigator>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const App = () => {
+  return (
+    <NavigationContainer>
+      <DrawerNavigator />
+    </NavigationContainer>
+  );
+};
 
 export default App;
